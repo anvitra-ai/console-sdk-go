@@ -29,7 +29,7 @@ func WithHTTPClient(client *http.Client) ClientOption {
 }
 
 // WithAuth sets the authentication token for the client.
-// The token is a JWT that should be included in the Authorization header of each request.
+// The token is the api key generated from anvitra console.
 func WithAuth(token string) ClientOption {
 	return func(c *Client) {
 		c.authToken = token
@@ -54,13 +54,23 @@ func NewClient(baseURL string, opts ...ClientOption) *Client {
 
 // doRequest performs an HTTP request
 func (c *Client) doRequest(method, path string, body interface{}, result interface{}, queryParams map[string]string) error {
+	return c.doRequestWithHeaders(method, path, body, result, queryParams, nil)
+}
+
+// doRequestWithHeaders performs an HTTP request with additional headers
+func (c *Client) doRequestWithHeaders(method, path string, body interface{}, result interface{}, queryParams map[string]string, headers map[string]string) error {
 	req, err := c.prepareRequest(method, path, body, queryParams)
 	if err != nil {
 		return err
 	}
 
 	if c.authToken != "" {
-		req.Header.Set("Authorization", "Bearer "+c.authToken)
+		req.Header.Set("X-API-Key", c.authToken)
+	}
+
+	// Add custom headers
+	for k, v := range headers {
+		req.Header.Set(k, v)
 	}
 
 	resp, err := c.httpClient.Do(req)

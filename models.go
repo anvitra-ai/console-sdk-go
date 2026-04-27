@@ -1,127 +1,153 @@
 package anvitra
 
-// GenericResponse represents the standard response structure
-type GenericResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-}
+import "time"
 
 // HealthResponse represents the health check response
 type HealthResponse struct {
 	Success bool   `json:"success"`
-	Message string `json:"message"`
-	Version string `json:"version,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
-// SyncStatus represents the synchronisation state of a replica
-type SyncStatus string
-
-const (
-	SyncStatusReady   SyncStatus = "ready"
-	SyncStatusSyncing SyncStatus = "syncing"
-)
-
-// ReplicaType represents the role of a replica in the cluster
-type ReplicaType int
-
-const (
-	ReadReplica  ReplicaType = iota // ReadReplica handles read traffic
-	WriteReplica                    // WriteReplica handles write traffic
-	SingleNode                      // SingleNode acts as both read and write
-)
-
-// IsRead reports whether the replica type handles read traffic
-func (rt ReplicaType) IsRead() bool {
-	return rt == ReadReplica || rt == SingleNode
+// User represents an Anvitra user
+type User struct {
+	ID        string    `json:"id"`
+	Email     string    `json:"email"`
+	Name      string    `json:"name,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
-// IsWrite reports whether the replica type handles write traffic
-func (rt ReplicaType) IsWrite() bool {
-	return rt == WriteReplica || rt == SingleNode
+// Project represents an Anvitra project
+type Project struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	UserID    string    `json:"user_id,omitempty"`
+	Enabled   bool      `json:"enabled"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
-// Replica represents a single Shilp service node
-type Replica struct {
-	Id        string `json:"id"`
-	Address   string `json:"address"`
-	IsHealthy bool   `json:"is_healthy"`
-	IsSyncing bool   `json:"is_syncing"` // Traffic gate - if true, no traffic is sent to this node
+// UserWithProjects represents user details with associated projects
+type UserWithProjects struct {
+	User     User      `json:"user"`
+	Projects []Project `json:"projects"`
 }
 
-// RegistryStatus holds the state of the write replica and all read replicas
-type RegistryStatus struct {
-	WriteReplica Replica    `json:"write_replica"`
-	ReadReplicas []*Replica `json:"read_replicas"`
-	Available    int        `json:"available_count"`
-	Total        int        `json:"total_count"`
+// DataRepo represents a data repository
+type DataRepo struct {
+	ID          string                   `json:"id"`
+	Name        string                   `json:"name"`
+	Description string                   `json:"description,omitempty"`
+	ProjectID   string                   `json:"project_id,omitempty"`
+	FilePath    string                   `json:"file_path,omitempty"`
+	FileType    string                   `json:"file_type,omitempty"`
+	FileSize    int64                    `json:"file_size,omitempty"`
+	Enabled     bool                     `json:"enabled"`
+	Tags        []string                 `json:"tags,omitempty"`
+	Schema      []map[string]interface{} `json:"schema,omitempty"`
+	PreviewData []map[string]interface{} `json:"preview_data,omitempty"`
+	CreatedAt   time.Time                `json:"created_at,omitempty"`
+	UpdatedAt   time.Time                `json:"updated_at,omitempty"`
+	DeletedAt   *time.Time               `json:"deleted_at,omitempty"`
 }
 
-// ProxyStats contains live proxy information for an account
-type ProxyStats struct {
-	ActiveProxies int      `json:"active_proxies"`
-	Targets       []string `json:"targets"`
+// Model represents an ML model
+type Model struct {
+	ID                           string                 `json:"id"`
+	Name                         string                 `json:"name"`
+	Version                      string                 `json:"version"`
+	Description                  string                 `json:"description,omitempty"`
+	ProjectID                    string                 `json:"project_id"`
+	ModelType                    string                 `json:"model_type,omitempty"`
+	Mode                         string                 `json:"mode,omitempty"`
+	FilePath                     string                 `json:"file_path,omitempty"`
+	FileSize                     int64                  `json:"file_size,omitempty"`
+	Collection                   string                 `json:"collection,omitempty"`
+	EmbeddingDim                 int                    `json:"embedding_dim,omitempty"`
+	LabelField                   string                 `json:"label_field,omitempty"`
+	Labels                       []string               `json:"labels,omitempty"`
+	LabelGrouping                map[string]interface{} `json:"label_grouping,omitempty"`
+	ClassifierSelectionStrategy  map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
+	NumSamples                   int                    `json:"num_samples,omitempty"`
+	Skipped                      int                    `json:"skipped,omitempty"`
+	Status                       string                 `json:"status,omitempty"`
+	SupportedVersion             string                 `json:"supported_version,omitempty"`
+	Enabled                      bool                   `json:"enabled"`
+	CreatedAt                    time.Time              `json:"created_at,omitempty"`
+	UpdatedAt                    time.Time              `json:"updated_at,omitempty"`
+	DeletedAt                    *time.Time             `json:"deleted_at,omitempty"`
 }
 
-// ShilpStats is the aggregated discovery statistics for a single account
-type ShilpStats struct {
-	Registry RegistryStatus `json:"registry"`
-	Proxy    ProxyStats     `json:"proxy"`
+// CreateModelRequest represents the request to create a model
+type CreateModelRequest struct {
+	Name        string `json:"name"`
+	Version     string `json:"version"`
+	Description string `json:"description,omitempty"`
+	ModelType   string `json:"model_type,omitempty"`
+	Mode        string `json:"mode,omitempty"`
 }
 
-// RegisterInstanceRequest is the payload for registering a Shilp or TEI service
-type RegisterInstanceRequest struct {
-	AccountID string `json:"account_id"`
-	Address   string `json:"address"`
-	Id        string `json:"id"`
-	IsRead    bool   `json:"is_read"`
-	IsWrite   bool   `json:"is_write"`
+// UpdateModelRequest represents the request to update a model
+type UpdateModelRequest struct {
+	Description      string `json:"description,omitempty"`
+	Status           string `json:"status,omitempty"`
+	SupportedVersion string `json:"supported_version,omitempty"`
 }
 
-// UpdateSyncStatusRequest is the payload for updating the sync state of a replica
-type UpdateSyncStatusRequest struct {
-	AccountID string     `json:"account_id"`
-	Address   string     `json:"address"`
-	Status    SyncStatus `json:"status"`
+// Vertical represents a vertical configuration
+type Vertical struct {
+	ID                           string                 `json:"id"`
+	Name                         string                 `json:"name"`
+	Version                      string                 `json:"version"`
+	Description                  string                 `json:"description,omitempty"`
+	ProjectID                    string                 `json:"project_id"`
+	BaseInstructions             string                 `json:"base_instructions,omitempty"`
+	DefaultMetricField           *string                `json:"default_metric_field,omitempty"`
+	ClassifierSelectionStrategy  map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
+	Enabled                      bool                   `json:"enabled"`
+	CreatedAt                    time.Time              `json:"created_at,omitempty"`
+	UpdatedAt                    time.Time              `json:"updated_at,omitempty"`
+	DeletedAt                    *time.Time             `json:"deleted_at,omitempty"`
 }
 
-// Account represents an Anvitra platform account
-type Account struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	CreatedAt string `json:"created_at,omitempty"`
+// CreateVerticalRequest represents the request to create a vertical
+type CreateVerticalRequest struct {
+	Name                        string                 `json:"name"`
+	Version                     string                 `json:"version"`
+	Description                 string                 `json:"description,omitempty"`
+	BaseInstructions            string                 `json:"base_instructions,omitempty"`
+	DefaultMetricField          *string                `json:"default_metric_field,omitempty"`
+	ClassifierSelectionStrategy map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
 }
 
-// CreateAccountRequest is the payload for creating a new account
-type CreateAccountRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password,omitempty"`
+// UpdateVerticalRequest represents the request to update a vertical
+type UpdateVerticalRequest struct {
+	Description                 string                 `json:"description,omitempty"`
+	BaseInstructions            string                 `json:"base_instructions,omitempty"`
+	DefaultMetricField          *string                `json:"default_metric_field,omitempty"`
+	ClassifierSelectionStrategy map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
 }
 
-// ListAccountsResponse is the response for the list-accounts endpoint
-type ListAccountsResponse struct {
-	Success bool      `json:"success"`
-	Message string    `json:"message"`
-	Data    []Account `json:"data"`
+// APIToken represents an API token
+type APIToken struct {
+	ID         string     `json:"id"`
+	Name       string     `json:"name"`
+	ProjectID  string     `json:"project_id"`
+	UserID     string     `json:"user_id"`
+	HashedKey  string     `json:"hashed_key,omitempty"`
+	LookupHash string     `json:"lookup_hash,omitempty"`
+	PlainKey   string     `json:"plain_key,omitempty"` // Only returned on creation
+	Enabled    bool       `json:"enabled"`
+	ExpiresAt  *time.Time `json:"expires_at,omitempty"`
+	CreatedAt  time.Time  `json:"created_at,omitempty"`
+	UpdatedAt  time.Time  `json:"updated_at,omitempty"`
+	DeletedAt  *time.Time `json:"deleted_at,omitempty"`
 }
 
-// GetAccountResponse is the response for the get-account endpoint
-type GetAccountResponse struct {
-	Success bool     `json:"success"`
-	Message string   `json:"message"`
-	Data    *Account `json:"data,omitempty"`
-}
-
-// LoginRequest is the payload for the login endpoint
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// LoginResponse is the response for the login endpoint
-type LoginResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-	Token   string `json:"token,omitempty"`
+// CreateAPITokenRequest represents the request to create an API token
+type CreateAPITokenRequest struct {
+	Name      string     `json:"name"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 }
