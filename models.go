@@ -5,7 +5,7 @@ import "time"
 // HealthResponse represents the health check response
 type HealthResponse struct {
 	Success bool   `json:"success"`
-	Message string `json:"message,omitempty"`
+	Version string `json:"version"`
 }
 
 // User represents an Anvitra user
@@ -150,4 +150,98 @@ type APIToken struct {
 type CreateAPITokenRequest struct {
 	Name      string     `json:"name"`
 	ExpiresAt *time.Time `json:"expires_at,omitempty"`
+}
+
+// Response wrapper types
+
+// BaseResponse represents a standard API response
+type BaseResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+}
+
+// UserResponse represents the response for GetCurrentUser
+type UserResponse struct {
+	Success  bool      `json:"success"`
+	Message  string    `json:"message,omitempty"`
+	User     User      `json:"user"`
+	Projects []Project `json:"projects"`
+}
+
+// DataReposResponse represents the response for ListDataRepos
+type DataReposResponse struct {
+	Success   bool       `json:"success"`
+	Message   string     `json:"message,omitempty"`
+	DataRepos []DataRepo `json:"data_repos"`
+}
+
+// DataRepoResponse represents the response for GetDataRepo
+type DataRepoResponse struct {
+	Success  bool      `json:"success"`
+	Message  string    `json:"message,omitempty"`
+	DataRepo *DataRepo `json:"data_repo"`
+}
+
+// DataRepoDownloadResponse represents the response for GetDataRepoDownloadURL
+type DataRepoDownloadResponse struct {
+	Success     bool   `json:"success"`
+	Message     string `json:"message,omitempty"`
+	DownloadURL string `json:"download_url"`
+	ExpiresAt   string `json:"expires_at,omitempty"`
+	ExpiresIn   string `json:"expires_in,omitempty"`
+	FileName    string `json:"file_name,omitempty"`
+	FileSize    int64  `json:"file_size,omitempty"`
+	FileType    string `json:"file_type,omitempty"`
+}
+
+// ModelsResponse represents the response for ListModels
+type ModelsResponse struct {
+	Success bool    `json:"success"`
+	Message string  `json:"message,omitempty"`
+	Models  []Model `json:"models"`
+}
+
+// ModelResponse represents the response for GetModel, CreateModel, and UpdateModel
+type ModelResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+	Model   *Model `json:"model"`
+}
+
+// ModelDownloadResponse represents the response for GetModelDownloadURL
+type ModelDownloadResponse struct {
+	Success     bool   `json:"success"`
+	Message     string `json:"message,omitempty"`
+	DownloadURL string `json:"download_url"`
+	ExpiresIn   string `json:"expires_in,omitempty"`
+	FileName    string `json:"file_name,omitempty"`
+	FileSize    int64  `json:"file_size,omitempty"`
+}
+
+// APITokensResponse represents the response for ListAPITokens
+type APITokensResponse struct {
+	Success  bool       `json:"success"`
+	Message  string     `json:"message,omitempty"`
+	APIKeys  []APIToken `json:"api_keys"`
+}
+
+// APITokenResponse represents the response for CreateAPIToken
+type APITokenResponse struct {
+	Success bool      `json:"success"`
+	Message string    `json:"message,omitempty"`
+	APIKey  *APIToken `json:"api_key"`
+}
+
+// VerticalsResponse represents the response for ListVerticals
+type VerticalsResponse struct {
+	Success   bool       `json:"success"`
+	Message   string     `json:"message,omitempty"`
+	Verticals []Vertical `json:"verticals"`
+}
+
+// VerticalResponse represents the response for GetVertical, CreateVertical, and UpdateVertical
+type VerticalResponse struct {
+	Success  bool      `json:"success"`
+	Message  string    `json:"message,omitempty"`
+	Vertical *Vertical `json:"vertical"`
 }
