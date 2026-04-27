@@ -1,0 +1,18 @@
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace
+go.sum
+
+# Module download cache
+vendor/
+
+# Build output
+bin/
+dist/
