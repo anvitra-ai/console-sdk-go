@@ -10,22 +10,22 @@ type HealthResponse struct {
 
 // User represents an Anvitra user
 type User struct {
-	ID        string    `json:"id"`
-	Email     string    `json:"email"`
-	Name      string    `json:"name,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	ID        string     `json:"id"`
+	Email     string     `json:"email"`
+	Name      string     `json:"name,omitempty"`
+	CreatedAt time.Time  `json:"created_at,omitempty"`
+	UpdatedAt time.Time  `json:"updated_at,omitempty"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
 // Project represents an Anvitra project
 type Project struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	UserID    string    `json:"user_id,omitempty"`
-	Enabled   bool      `json:"enabled"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	UserID    string     `json:"user_id,omitempty"`
+	Enabled   bool       `json:"enabled"`
+	CreatedAt time.Time  `json:"created_at,omitempty"`
+	UpdatedAt time.Time  `json:"updated_at,omitempty"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
@@ -55,29 +55,29 @@ type DataRepo struct {
 
 // Model represents an ML model
 type Model struct {
-	ID                           string                 `json:"id"`
-	Name                         string                 `json:"name"`
-	Version                      string                 `json:"version"`
-	Description                  string                 `json:"description,omitempty"`
-	ProjectID                    string                 `json:"project_id"`
-	ModelType                    string                 `json:"model_type,omitempty"`
-	Mode                         string                 `json:"mode,omitempty"`
-	FilePath                     string                 `json:"file_path,omitempty"`
-	FileSize                     int64                  `json:"file_size,omitempty"`
-	Collection                   string                 `json:"collection,omitempty"`
-	EmbeddingDim                 int                    `json:"embedding_dim,omitempty"`
-	LabelField                   string                 `json:"label_field,omitempty"`
-	Labels                       []string               `json:"labels,omitempty"`
-	LabelGrouping                map[string]interface{} `json:"label_grouping,omitempty"`
-	ClassifierSelectionStrategy  map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
-	NumSamples                   int                    `json:"num_samples,omitempty"`
-	Skipped                      int                    `json:"skipped,omitempty"`
-	Status                       string                 `json:"status,omitempty"`
-	SupportedVersion             string                 `json:"supported_version,omitempty"`
-	Enabled                      bool                   `json:"enabled"`
-	CreatedAt                    time.Time              `json:"created_at,omitempty"`
-	UpdatedAt                    time.Time              `json:"updated_at,omitempty"`
-	DeletedAt                    *time.Time             `json:"deleted_at,omitempty"`
+	ID                          string                 `json:"id"`
+	Name                        string                 `json:"name"`
+	Version                     string                 `json:"version"`
+	Description                 string                 `json:"description,omitempty"`
+	ProjectID                   string                 `json:"project_id"`
+	ModelType                   string                 `json:"model_type,omitempty"`
+	Mode                        string                 `json:"mode,omitempty"`
+	FilePath                    string                 `json:"file_path,omitempty"`
+	FileSize                    int64                  `json:"file_size,omitempty"`
+	Collection                  string                 `json:"collection,omitempty"`
+	EmbeddingDim                int                    `json:"embedding_dim,omitempty"`
+	LabelField                  string                 `json:"label_field,omitempty"`
+	Labels                      []string               `json:"labels,omitempty"`
+	LabelGrouping               map[string]interface{} `json:"label_grouping,omitempty"`
+	ClassifierSelectionStrategy map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
+	NumSamples                  int                    `json:"num_samples,omitempty"`
+	Skipped                     int                    `json:"skipped,omitempty"`
+	Status                      string                 `json:"status,omitempty"`
+	SupportedVersion            string                 `json:"supported_version,omitempty"`
+	Enabled                     bool                   `json:"enabled"`
+	CreatedAt                   time.Time              `json:"created_at,omitempty"`
+	UpdatedAt                   time.Time              `json:"updated_at,omitempty"`
+	DeletedAt                   *time.Time             `json:"deleted_at,omitempty"`
 }
 
 // CreateModelRequest represents the request to create a model
@@ -96,38 +96,136 @@ type UpdateModelRequest struct {
 	SupportedVersion string `json:"supported_version,omitempty"`
 }
 
+// AttributeType represents the data type of a field
+type AttributeType int
+
+const (
+	AttributeTypeNumerical AttributeType = 1
+	AttributeTypeString    AttributeType = 2
+)
+
+// ComparisonOperator represents comparison operators for conditions
+type ComparisonOperator string
+
+const (
+	ComparisonOperatorGT    ComparisonOperator = "GT"
+	ComparisonOperatorGTE   ComparisonOperator = "GTE"
+	ComparisonOperatorLT    ComparisonOperator = "LT"
+	ComparisonOperatorLTE   ComparisonOperator = "LTE"
+	ComparisonOperatorEQ    ComparisonOperator = "EQ"
+	ComparisonOperatorNEQ   ComparisonOperator = "NEQ"
+	ComparisonOperatorIN    ComparisonOperator = "IN"
+	ComparisonOperatorNOTIN ComparisonOperator = "NOTIN"
+)
+
+// ConditionValue represents a value in a condition (either numerical or text)
+type ConditionValue struct {
+	Numerical *float64 `json:"numerical,omitempty"`
+	Text      *string  `json:"text,omitempty"`
+}
+
+// GeneratedCondition represents a condition generated for phrase rules
+type GeneratedCondition struct {
+	Operator ComparisonOperator `json:"operator"`
+	Value    ConditionValue     `json:"value"`
+}
+
+// FieldConfig represents canonical fields and their synonyms
+type FieldConfig struct {
+	CanonicalName string        `json:"canonical_name"`
+	Synonyms      []string      `json:"synonyms"`
+	IsMetadata    bool          `json:"is_metadata"`
+	DataType      AttributeType `json:"data_type"`
+}
+
+// ValueSynonymConfig represents value-level synonyms
+type ValueSynonymConfig struct {
+	Field          string   `json:"field"`
+	CanonicalValue string   `json:"canonical_value"`
+	Synonyms       []string `json:"synonyms"`
+}
+
+// PhraseRuleConfig represents phrase rules with optional generated conditions
+type PhraseRuleConfig struct {
+	Phrase      string              `json:"phrase"`
+	MappedField string              `json:"mapped_field"`
+	Condition   *GeneratedCondition `json:"condition,omitempty"`
+}
+
 // Vertical represents a vertical configuration
 type Vertical struct {
-	ID                           string                 `json:"id"`
-	Name                         string                 `json:"name"`
-	Version                      string                 `json:"version"`
-	Description                  string                 `json:"description,omitempty"`
-	ProjectID                    string                 `json:"project_id"`
-	BaseInstructions             string                 `json:"base_instructions,omitempty"`
-	DefaultMetricField           *string                `json:"default_metric_field,omitempty"`
-	ClassifierSelectionStrategy  map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
-	Enabled                      bool                   `json:"enabled"`
-	CreatedAt                    time.Time              `json:"created_at,omitempty"`
-	UpdatedAt                    time.Time              `json:"updated_at,omitempty"`
-	DeletedAt                    *time.Time             `json:"deleted_at,omitempty"`
+	ID        string `json:"id"`
+	ProjectID string `json:"project_id"`
+	Name      string `json:"name"`
+	Label     string `json:"label"`
+	Version   string `json:"version"`
+
+	// LLM configuration
+	BaseInstructions   string `json:"base_instructions"`
+	DomainInstructions string `json:"domain_instructions"`
+	Examples           string `json:"examples"`
+
+	// Schema enrichment
+	Fields        []FieldConfig        `json:"fields"`
+	ValueSynonyms []ValueSynonymConfig `json:"value_synonyms"`
+	PhraseRules   []PhraseRuleConfig   `json:"phrase_rules"`
+	WordsToRemove []string             `json:"words_to_remove"`
+
+	// Classifier configuration
+	ClassifierSelectionStrategy *ClassifierSelectionStrategy `json:"classifier_selection_strategy,omitempty"`
+	DefaultMetricField          *string                      `json:"default_metric_field,omitempty"`
+
+	// Standard fields
+	Enabled   bool       `json:"enabled"`
+	CreatedAt *time.Time `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+}
+
+type ClassifierSelectionStrategy struct {
+	Method    string   `json:"method"` // e.g., "confidence_gap", "cumulative_threshold"
+	Threshold *float32 `json:"threshold,omitempty"`
+	K         *int     `json:"k,omitempty"`
 }
 
 // CreateVerticalRequest represents the request to create a vertical
 type CreateVerticalRequest struct {
-	Name                        string                 `json:"name"`
-	Version                     string                 `json:"version"`
-	Description                 string                 `json:"description,omitempty"`
-	BaseInstructions            string                 `json:"base_instructions,omitempty"`
-	DefaultMetricField          *string                `json:"default_metric_field,omitempty"`
-	ClassifierSelectionStrategy map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
+	Name    string `json:"name"`
+	Label   string `json:"label"`
+	Version string `json:"version"`
+
+	// Optional LLM configuration
+	BaseInstructions   string `json:"base_instructions,omitempty"`
+	DomainInstructions string `json:"domain_instructions,omitempty"`
+	Examples           string `json:"examples,omitempty"`
+
+	// Optional schema enrichment
+	Fields        []FieldConfig        `json:"fields,omitempty"`
+	ValueSynonyms []ValueSynonymConfig `json:"value_synonyms,omitempty"`
+	PhraseRules   []PhraseRuleConfig   `json:"phrase_rules,omitempty"`
+	WordsToRemove []string             `json:"words_to_remove,omitempty"`
+
+	// Optional classifier configuration
+	ClassifierSelectionStrategy *ClassifierSelectionStrategy `json:"classifier_selection_strategy,omitempty"`
+	DefaultMetricField          *string                      `json:"default_metric_field,omitempty"`
 }
 
 // UpdateVerticalRequest represents the request to update a vertical
 type UpdateVerticalRequest struct {
-	Description                 string                 `json:"description,omitempty"`
-	BaseInstructions            string                 `json:"base_instructions,omitempty"`
-	DefaultMetricField          *string                `json:"default_metric_field,omitempty"`
-	ClassifierSelectionStrategy map[string]interface{} `json:"classifier_selection_strategy,omitempty"`
+	Label              *string `json:"label,omitempty"`
+	BaseInstructions   *string `json:"base_instructions,omitempty"`
+	DomainInstructions *string `json:"domain_instructions,omitempty"`
+	Examples           *string `json:"examples,omitempty"`
+
+	// Schema enrichment (if provided, replaces existing)
+	Fields        *[]FieldConfig        `json:"fields,omitempty"`
+	ValueSynonyms *[]ValueSynonymConfig `json:"value_synonyms,omitempty"`
+	PhraseRules   *[]PhraseRuleConfig   `json:"phrase_rules,omitempty"`
+	WordsToRemove *[]string             `json:"words_to_remove,omitempty"`
+
+	// Classifier configuration
+	ClassifierSelectionStrategy *ClassifierSelectionStrategy `json:"classifier_selection_strategy,omitempty"`
+	DefaultMetricField          *string                      `json:"default_metric_field,omitempty"`
 }
 
 // APIToken represents an API token
@@ -220,9 +318,9 @@ type ModelDownloadResponse struct {
 
 // APITokensResponse represents the response for ListAPITokens
 type APITokensResponse struct {
-	Success  bool       `json:"success"`
-	Message  string     `json:"message,omitempty"`
-	APIKeys  []APIToken `json:"api_keys"`
+	Success bool       `json:"success"`
+	Message string     `json:"message,omitempty"`
+	APIKeys []APIToken `json:"api_keys"`
 }
 
 // APITokenResponse represents the response for CreateAPIToken
